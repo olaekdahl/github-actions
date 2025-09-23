@@ -1,8 +1,8 @@
 name: 06 - Conditions, Timeouts, Concurrency
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ]
 concurrency:
   group: demo-06-${{ github.ref }}
   cancel-in-progress: true
