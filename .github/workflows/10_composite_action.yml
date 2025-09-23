@@ -1,0 +1,18 @@
+name: 10 - Composite Action Demo
+on:
+  workflow_dispatch:
+jobs:
+  composite_demo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo (needed to access local composite action)
+        uses: actions/checkout@v4
+      - name: Use local composite action
+        uses: ./.github/actions/hello-composite
+        with:
+          name: "Actions Student"
+      - name: Read output from composite action
+        run: echo "Composite said: ${{ steps.hello.outputs.salutation }}"
+        id: show
+      # The above step is only to demonstrate step IDs vs composite outputs;
+      # Real output comes from the composite 'id' inside action.yml.

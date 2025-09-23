@@ -1,0 +1,56 @@
+name: 13 - PR-triggered Checks
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.md'
+jobs:
+  changed-files:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      js_changed: ${{ steps.filter.outputs.js }}
+      docs_changed: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            js:
+              - '**/*.js'
+              - '**/*.ts'
+            docs:
+              - '**/*.md'
+      - name: Report changed groups
+        run: |
+          echo "JS or TS changed: ${{ steps.filter.outputs.js }}"
+          echo "Docs changed: ${{ steps.filter.outputs.docs }}"
+  lint:
+    name: Lint (only when JS/TS changed)
+    needs: changed-files
+    if: needs.changed-files.outputs.js_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install a simple linter (eslint) and run
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm i -D eslint >/dev/null 2>&1
+          npx eslint . || true   # not failing build in demo
+  docs-check:
+    name: Docs Check (only when docs changed)
+    needs: changed-files
+    if: needs.changed-files.outputs.docs_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure README exists
+        run: test -f README.md && echo "README found" || (echo "README missing" && exit 1)

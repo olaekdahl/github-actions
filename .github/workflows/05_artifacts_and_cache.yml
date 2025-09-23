@@ -1,0 +1,35 @@
+name: 05 - Artifacts and Cache
+on:
+  workflow_dispatch:
+jobs:
+  artifacts_cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create files to upload
+        run: |
+          mkdir -p dist
+          echo "Report generated at $(date)" > dist/report.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-artifact
+          path: dist/
+      - name: Prime a cache directory
+        run: |
+          mkdir -p .cache-demo
+          echo "$(date)" > .cache-demo/when.txt
+      - name: Cache the directory (key uses date only to show hits/misses)
+        uses: actions/cache@v4
+        with:
+          path: .cache-demo
+          key: cache-demo-${{ runner.os }}-${{ hashFiles('**/*.yml') }}
+      - name: Modify cached content
+        run: |
+          echo "Appended at $(date)" >> .cache-demo/when.txt
+      - name: Download artifact (same workflow)
+        uses: actions/download-artifact@v4
+        with:
+          name: demo-artifact
+          path: downloaded/
+      - name: Show downloaded artifact content
+        run: cat downloaded/report.txt

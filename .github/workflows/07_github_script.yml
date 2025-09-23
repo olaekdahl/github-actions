@@ -1,0 +1,34 @@
+name: 07 - GitHub Script
+on:
+  workflow_dispatch:
+jobs:
+  script_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump context to summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload;
+            const md = `
+            # Run Summary
+            - Actor: **${{ github.actor }}**
+            - Event: **${{ github.event_name }}**
+            - Ref: **${{ github.ref }}**
+            - Workflow: **${{ github.workflow }}**
+            - Run ID: **${{ github.run_id }}**
+
+            <details><summary>Context payload (truncated)</summary>
+
+            \`\`\`json
+            ${JSON.stringify(payload, null, 2).substring(0, 2000)}
+            \`\`\`
+
+            </details>
+            `;
+            await core.summary.addRaw(md).write();
+      - name: Add notice
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.notice('This is a demo notice from github-script');

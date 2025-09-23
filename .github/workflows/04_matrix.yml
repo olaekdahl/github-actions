@@ -1,0 +1,28 @@
+name: 04 - Matrix Strategy
+on:
+  workflow_dispatch:
+jobs:
+  matrix-demo:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [18, 20]
+        include:
+          - os: ubuntu-latest
+            node: 22
+        exclude:
+          - os: windows-latest
+            node: 18
+    steps:
+      - name: Show runner and Node version
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Node version target: ${{ matrix.node }}"
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Print node version
+        run: node -v

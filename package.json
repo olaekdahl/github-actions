@@ -1,0 +1,9 @@
+{
+  "name": "gha-demos",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "echo": "echo running package.json script",
+    "test": "echo no tests && exit 0"
+  }
+}

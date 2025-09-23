@@ -1,0 +1,9 @@
+name: 09 - Call Reusable Workflow
+on:
+  workflow_dispatch:
+jobs:
+  call_reusable:
+    uses: ./.github/workflows/08_reusable_workflow.yml
+    with:
+      greeting: "Hi from the caller workflow"
+      run-matrix: true

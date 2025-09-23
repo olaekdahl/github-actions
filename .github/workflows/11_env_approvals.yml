@@ -1,0 +1,33 @@
+name: 11 - Environment Approvals
+on:
+  workflow_dispatch:
+    inputs:
+      do-dangerous-thing:
+        description: 'Simulate a deployment that requires approval'
+        required: false
+        default: 'false'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Build step ran. Next job targets a protected environment."
+  deploy:
+    # This job targets a protected environment that must be created in repo settings (Environments -> new).
+    # In that environment, set "Required reviewers" to force a manual approval before this job runs.
+    # Example environment name: 'staging'
+    environment:
+      name: staging
+      url: https://example.invalid/app  # purely illustrative
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show input and environment context
+        run: |
+          echo "Input do-dangerous-thing: ${{ inputs.do-dangerous-thing }}"
+          echo "Environment: ${{ job.environment }}"
+      - name: Simulated deploy action
+        if: inputs.do-dangerous-thing == 'true'
+        run: echo "Doing the 'dangerous' thing after approval..."
+      - name: Skip path
+        if: inputs.do-dangerous-thing != 'true'
+        run: echo "Approval happened, but we chose not to do the dangerous thing."

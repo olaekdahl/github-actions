@@ -1,0 +1,28 @@
+name: 12 - OIDC to AWS (Assume Role)
+on:
+  workflow_dispatch:
+    inputs:
+      aws-region:
+        description: 'AWS Region'
+        default: 'us-west-2'
+        required: true
+permissions:
+  id-token: write   # REQUIRED for OIDC
+  contents: read
+jobs:
+  oidc_aws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials via OIDC
+        # Pre-reqs (outside GitHub):
+        # 1) In AWS IAM, create an OIDC IAM role trusted by GitHub's OIDC provider for this repo.
+        # 2) Allow sts:AssumeRoleWithWebIdentity, and grant minimal permissions (e.g., s3:ListAllMyBuckets for demo).
+        # 3) Put the role ARN below.
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsDemoRole  # <--- replace with your role ARN
+          aws-region: ${{ inputs.aws-region }}
+      - name: Verify caller identity
+        run: aws sts get-caller-identity
+      - name: List S3 buckets (requires s3:ListAllMyBuckets permission on role policy)
+        run: aws s3 ls

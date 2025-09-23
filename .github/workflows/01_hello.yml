@@ -1,0 +1,16 @@
+name: 01 - Hello (Echo Only)
+on:
+  workflow_dispatch:
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo a friendly message
+        run: echo "Hello from GitHub Actions!"
+      - name: List content
+        run: ls
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: List content after git checkout
+        run: ls
+      # Tip: The 'run:' key executes shell on the runner. This is the minimal building block.

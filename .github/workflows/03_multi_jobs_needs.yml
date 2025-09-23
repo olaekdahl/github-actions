@@ -1,0 +1,26 @@
+name: 03 - Multiple Jobs with Needs
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate build
+        run: echo "Building..."
+      - name: Produce build artifact name
+        id: meta
+        run: echo "artifact=build-output.txt" >> $GITHUB_OUTPUT
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact }}
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Echo build artifact name from previous job
+        run: echo "Testing artifact: ${{ needs.build.outputs.artifact_name }}"
+  report:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    steps:
+      - name: Final summary
+        run: echo "All jobs completed after build and test."

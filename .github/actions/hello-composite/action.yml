@@ -1,0 +1,17 @@
+name: 'Hello Composite Action'
+description: 'Simple composite action that greets a name and exposes an output'
+inputs:
+  name:
+    description: 'Name to greet'
+    required: true
+outputs:
+  salutation:
+    description: 'The greeting produced'
+runs:
+  using: 'composite'
+  steps:
+    - id: hello
+      shell: bash
+      run: |
+        echo "Hello, ${{ inputs.name }} from a composite action!"
+        echo "salutation=Hello, ${{ inputs.name }}!" >> $GITHUB_OUTPUT

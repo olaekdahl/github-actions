@@ -1,0 +1,30 @@
+name: 08 - Reusable Workflow (workflow_call)
+on:
+  workflow_call:
+    inputs:
+      greeting:
+        type: string
+        required: true
+      run-matrix:
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      final-message:
+        description: "Message from reusable workflow"
+        value: ${{ jobs.reusable_job.outputs.final_message }}
+jobs:
+  reusable_job:
+    runs-on: ubuntu-latest
+    outputs:
+      final_message: ${{ steps.out.outputs.msg }}
+    steps:
+      - name: Greet with input
+        run: echo "Reusable says: ${{ inputs.greeting }}"
+      - name: Conditional matrix emulation
+        if: inputs.run-matrix == true
+        run: |
+          echo "Pretend we ran a matrix here. Keep reusable simple."
+      - name: Set output for caller
+        id: out
+        run: echo "msg=Reusable finished successfully" >> $GITHUB_OUTPUT
