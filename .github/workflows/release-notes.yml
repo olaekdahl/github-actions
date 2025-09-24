@@ -1,0 +1,59 @@
+name: Add to Changelog
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read
+  issues: write
+  contents: read
+  models: read
+
+jobs:
+  add_to_changelog:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install gh-models extension
+        run: gh extension install https://github.com/github/gh-models
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Summarize PR and append to release issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+          else
+            # For manual runs, default to HEAD PR if any, else exit
+            PR_NUMBER=$(gh pr list --state merged --limit 1 --json number --jq '.[0].number')
+          fi
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No merged PR to summarize. Exiting."
+            exit 0
+          fi
+
+          # Fetch PR and save to a file
+          gh pr view "$PR_NUMBER" --json title,body,comments,reviews > pr.json
+
+          # Generate a concise one-line changelog entry
+          cat pr.json | gh models run xai/grok-3-mini             "Given the following pull request information, generate a single, clear, and concise one-line changelog entry that summarizes the main change (feature, fix, or bug) introduced by this PR. Use neutral, user-facing language and avoid technical jargon or internal references. Only write the line, with no additional introduction or explanation text." > summary.md
+
+          # Find the pre-created release issue (label must be 'release')
+          RELEASE_ISSUE=$(gh issue list --label release --limit 1 --json number --jq '.[0].number')
+          if [ -z "$RELEASE_ISSUE" ]; then
+            echo "No issue labeled 'release' found. Create one titled 'Publish next release changelog'."
+            exit 1
+          fi
+
+          # Append new line to the issue body
+          RELEASE_ISSUE_BODY=$(gh issue view "$RELEASE_ISSUE" --json body --jq '.body')
+          FORMATTED_LINE="- $(cat summary.md) (#$PR_NUMBER)"
+          NEW_BODY="${RELEASE_ISSUE_BODY}"$'\n'"$FORMATTED_LINE"
+          gh issue edit "$RELEASE_ISSUE" --body "$NEW_BODY"
