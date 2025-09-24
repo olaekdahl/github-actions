@@ -20,7 +20,7 @@ jobs:
         # 3) Put the role ARN below.
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsDemoRole  # <--- replace with your role ARN
+          role-to-assume: arn:aws:iam::${{secrets.AWS_ACCOUNT_ID}}:role/github-actions-demo  # <--- replace with your role ARN
           aws-region: ${{ inputs.aws-region }}
       - name: Verify caller identity
         run: aws sts get-caller-identity
