@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   call_reusable:
-    uses: ./github-actions/.github/workflows/08_reusable_workflow.yml
+    uses: ./.github/workflows/08_reusable_workflow.yml
     with:
       greeting: "Hi from the caller workflow"
       run-matrix: true
