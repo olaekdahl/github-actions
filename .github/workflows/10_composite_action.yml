@@ -12,7 +12,8 @@ jobs:
         with:
           name: "Actions Student"
       - name: Read output from composite action
-        run: echo "Composite said: ${{ steps.hello.outputs.salutation }}"
+        run: |  
+          echo "Composite said: ${{ steps.hello.outputs.salutation }}"
         id: show
       # The above step is only to demonstrate step IDs vs composite outputs;
       # Real output comes from the composite 'id' inside action.yml.

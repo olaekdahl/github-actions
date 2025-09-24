@@ -20,7 +20,8 @@ jobs:
       final_message: ${{ steps.out.outputs.msg }}
     steps:
       - name: Greet with input
-        run: echo "Reusable says: ${{ inputs.greeting }}"
+        run: |
+          echo "Reusable says: ${{ inputs.greeting }}"
       - name: Conditional matrix emulation
         if: inputs.run-matrix == true
         run: |

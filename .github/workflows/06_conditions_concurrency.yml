@@ -13,7 +13,8 @@ jobs:
     steps:
       - name: Only runs on main or manual dispatch
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-        run: echo "Condition matched: ref=${{ github.ref }} event=${{ github.event_name }}"
+        run: |
+          echo "Condition matched: ref=${{ github.ref }} event=${{ github.event_name }}"
       - name: This step is skipped on non-main for push
         if: github.event_name == 'push' && github.ref != 'refs/heads/main'
         run: echo "You won't see this on non-main pushes"

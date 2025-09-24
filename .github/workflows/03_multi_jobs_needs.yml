@@ -17,7 +17,8 @@ jobs:
     needs: build
     steps:
       - name: Echo build artifact name from previous job
-        run: echo "Testing artifact: ${{ needs.build.outputs.artifact_name }}"
+        run: |
+          echo "Testing artifact: ${{ needs.build.outputs.artifact_name }}"
   report:
     runs-on: ubuntu-latest
     needs: [build, test]
