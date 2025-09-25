@@ -1,4 +1,4 @@
-name: Bug Report Reproduction Check
+name: 15 - Bug Report Reproduction Check
 on:
   issues:
     types: [opened]

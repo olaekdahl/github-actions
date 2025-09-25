@@ -1,4 +1,4 @@
-name: Add to Changelog
+name: 16 - Release Notes
 on:
   pull_request:
     types: [closed]

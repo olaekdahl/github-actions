@@ -1,4 +1,4 @@
-name: Weekly Issue Summary
+name: 17 - Weekly Issue Summary
 on:
   workflow_dispatch:
   schedule:
